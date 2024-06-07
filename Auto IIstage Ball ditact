@@ -1,0 +1,487 @@
+#include "CytronMotorDriver.h"
+
+#define Ball_UP 1
+#define Ball_DOWN 2
+#define Ball_STOP 0
+
+CytronMD motor1(PWM_DIR, 12, 23);  // PWM 1 = Pin 3, DIR 1 = Pin 4.
+CytronMD motor2(PWM_DIR, 3, 25);  // PWM 2 = Pin 9, DIR 2 = Pin 10.
+CytronMD motor3(PWM_DIR, 4, 27);
+CytronMD motor4(PWM_DIR, 5, 29);
+CytronMD motorBall(PWM_DIR, 7, 33);
+CytronMD motorL(PWM_DIR, 6, 31);
+
+int sole = 28;
+int SlowSpeed = 35;
+int SlowiSpeed = -35;
+int limitUP = 41;
+int limitDU = 43;
+int Speed = 45;
+int iSpeed = -45;
+int CSpeed = 35;
+int iCSpeed = -35;
+int SlowCSpeed = 20;
+int SlowiCSpeed = -20;
+int Angle = 37;
+int  Emr = 21;
+
+int a = 0;
+int b = 2;
+
+int gh = 1;
+
+int Ball_state;
+
+int x;
+
+void setup() {
+  Serial.begin(9600);
+  
+
+  pinMode(limitUP, INPUT_PULLUP);
+  pinMode(limitDU, INPUT_PULLUP);
+  pinMode(Angle, INPUT_PULLUP);
+  
+  pinMode(Emr, INPUT_PULLUP);
+
+  pinMode(sole, OUTPUT);
+  digitalWrite(sole, LOW);
+
+  while(true)
+  {
+    int LimitUP = digitalRead(limitUP);
+
+    if(LimitUP == LOW){
+        motorL.setSpeed(-3);
+        digitalWrite(sole, LOW);
+        break;}
+      else
+      {
+        motorL.setSpeed(-30);
+      }
+  }
+}
+
+void loop() {
+  int emr = digitalRead(Emr);
+  int LimitUP = digitalRead(limitUP);
+  int LimitDU = digitalRead(limitDU);
+  int angle = digitalRead(Angle);
+
+  
+
+
+   if(emr == LOW){
+
+      while(a < b && gh == 1){
+      Serial.println("Rball");
+      a++;
+      delay(100);
+
+      
+      
+    }
+    while(a < b && gh == 2){
+      Serial.println("Pball");
+      a++;
+      delay(100);
+
+      
+      
+    }
+    
+
+    if(x == 'k'){
+      Speed = Speed + 6;
+      iSpeed = iSpeed + 6;
+    }
+    else if(x == 'p'){
+      Speed = Speed - 6;
+      iSpeed = iSpeed - 6;
+    }
+
+    if(x == 'g'){
+      asm volatile ("  jmp 0");
+    }
+
+
+
+  if (Serial.available() > 0){
+    x=Serial.read();
+  
+  if (x=='3'){
+    forward();
+  }
+  if (x=='F'){
+    forward();
+  }
+  if(x == '15'){
+    digitalWrite(sole, HIGH); 
+  }
+
+  if (x=='6'){
+    Sforward();
+  }
+  if (x=='5'){
+    Sright();
+  }
+  if (x=='4'){
+    Sleft();
+  }
+ 
+
+
+  else if (x=='7'){
+    back();
+  }
+  else if (x=='B'){
+    back();
+  }
+
+
+  else if (x=='2'){
+    right();
+  }
+
+
+  else if (x=='1'){
+    left();
+  }
+
+  if (x=='8'){
+    stop();
+  }
+  if (x=='H'){
+    stop();
+  }
+ 
+
+  if (x=='9'){  
+    
+    back();
+   delay(300);
+   motor1.setSpeed(0);
+   motor2.setSpeed(0);
+   delay(50);  
+
+    while(true)
+    {
+      LimitDU = digitalRead(limitDU);
+
+      if(LimitDU == LOW)
+      {
+        motorL.setSpeed(0);
+        break;
+      }
+      else
+      {
+        motorL.setSpeed(60);
+      }
+    }  
+
+          
+
+    while(true)
+    {
+      angle = digitalRead(Angle);
+
+      if(angle == LOW){
+        motorBall.setSpeed(0);
+        break;}
+      else
+      {
+        motorBall.setSpeed(150);
+      }
+    }  
+
+   delay(500);
+   
+
+    digitalWrite(sole, HIGH); 
+
+  delay(100);
+
+    while(true)
+    {
+      LimitUP = digitalRead(limitUP);
+
+      if(LimitUP == LOW){
+        motorL.setSpeed(-3);
+        break;}
+      else
+      {
+        motorL.setSpeed(-75);
+      }
+    }      
+
+    motorBall.setSpeed(-150);
+    clock();
+    delay(1600);
+    motor1.setSpeed(0);
+    motor2.setSpeed(0);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+    
+    delay(150);
+    motorBall.setSpeed(0);
+    
+    Serial.println("silo");
+    
+    
+
+   /*
+          LimitDU = digitalRead(limitDU);
+          angle = digitalRead(Angle);
+
+          while(LimitDU == HIGH){
+            
+            motorL.setSpeed(30);
+            LimitDU = digitalRead(limitDU);
+          }
+          motorL.setSpeed(0);
+          delay(100);
+          angle = digitalRead(Angle);
+          while(angle == HIGH){
+            
+            motorBall.setSpeed(30);
+            angle = digitalRead(Angle);
+          }
+         
+          motorBall.setSpeed(0);
+          delay(10);
+          digitalWrite(sole, HIGH);
+          Serial.println("silo");
+          delay(1000);
+          
+          LimitUP = digitalRead(limitUP);
+          while(LimitUP == HIGH){
+
+            motorL.setSpeed(-35);
+            LimitUP = digitalRead(LimitUP);
+          }
+          motorL.setSpeed(-3);
+          motorBall.setSpeed(-50);
+          delay(5500);
+          motorBall.setSpeed(0);
+          //rotTilSilo();
+
+          motor1.setSpeed(-25);
+          motor2.setSpeed(25);
+          motor3.setSpeed(25);
+          motor4.setSpeed(-25);
+          delay(1300);
+          motor1.setSpeed(0);
+          motor2.setSpeed(0);
+          motor3.setSpeed(0);
+          motor4.setSpeed(0);
+   */           
+  }
+
+  if (x=='U'){
+    Ball_U();
+  }
+  else if (x=='D'){
+    Ball_D();
+  }
+
+  if (x != 'D' && angle == LOW){
+    motorBall.setSpeed(0);
+  }
+
+
+
+  if (x=='A'){
+    anticlock();
+  }
+
+
+
+
+  else if (x=='C'){
+    clock();
+  }
+
+
+
+
+  else if (x=='0'){
+    digitalWrite(sole, LOW);
+    delay(1000);
+    back();
+    delay(800);
+    clock();
+    delay(1500);
+    stop();
+  gh = 2;
+  b = b + 2;
+  }
+
+  }
+  delay(0);
+}
+
+
+ else {
+      motor1.setSpeed(0);
+      motor2.setSpeed(0);
+      motor3.setSpeed(0);
+      motor4.setSpeed(0);
+      motorL.setSpeed(-3);
+      motorBall.setSpeed(0);
+ }
+}
+
+void Ball_down(){
+  motorL.setSpeed(35);
+  
+}
+
+void Ball_up(){
+  motorL.setSpeed(-30);
+ 
+}
+
+void Ball_stop(){
+  motorL.setSpeed(0);
+
+}
+
+void Ball_U(){
+  motorBall.setSpeed(-200);
+  
+}
+
+void Ball_D(){
+  motorBall.setSpeed(200);
+ 
+}
+
+void back() {
+  motor1.setSpeed(iSpeed);  // Motor 1 runs forward at specified speed.
+  motor2.setSpeed(iSpeed);
+  motor3.setSpeed(0);  // Motor 1 runs forward at specified speed.
+  motor4.setSpeed(0);
+  
+}
+
+void forward() {
+  motor1.setSpeed(Speed + 10);  // Motor 1 runs backward at specified speed.
+  motor2.setSpeed(Speed + 10);
+  motor3.setSpeed(0);  // Motor 1 runs forward at specified speed.
+  motor4.setSpeed(0);
+  
+}
+
+void Sforward() {
+  motor1.setSpeed(SlowSpeed + 2);  // Motor 1 runs backward at specified speed.
+  motor2.setSpeed(SlowSpeed + 2);
+  motor3.setSpeed(0);  // Motor 1 runs forward at specified speed.
+  motor4.setSpeed(0);
+  
+}
+
+void right() {
+  motor3.setSpeed(Speed);  // Motor 1 runs backward at specified speed.
+  motor4.setSpeed(Speed);
+  motor1.setSpeed(0);  // Motor 1 runs forward at specified speed.
+  motor2.setSpeed(0);
+ 
+}
+
+void Sright() {
+  motor3.setSpeed(SlowSpeed - 10);  // Motor 1 runs backward at specified speed.
+  motor4.setSpeed(SlowSpeed - 10);
+  motor1.setSpeed(0);  // Motor 1 runs forward at specified speed.
+  motor2.setSpeed(0);
+ 
+}
+
+void left() {
+  motor3.setSpeed(iSpeed);  // Motor 1 runs forward at specified speed.
+  motor4.setSpeed(iSpeed);
+  motor1.setSpeed(0);  // Motor 1 runs forward at specified speed.
+  motor2.setSpeed(0);
+  //Serial.println("right");
+}
+
+void Sleft() {
+  motor3.setSpeed(SlowiSpeed + 10);  // Motor 1 runs forward at specified speed.
+  motor4.setSpeed(SlowiSpeed + 10);
+  motor1.setSpeed(0);  // Motor 1 runs forward at specified speed.
+  motor2.setSpeed(0);
+  //Serial.println("right");
+}
+
+void anticlock() {
+  motor1.setSpeed(CSpeed);
+  motor2.setSpeed(iCSpeed);
+  motor3.setSpeed(iCSpeed);
+  motor4.setSpeed(CSpeed);
+  //Serial.println("clock");
+}
+
+void Santiclock() {
+  motor1.setSpeed(SlowCSpeed);
+  motor2.setSpeed(SlowiCSpeed);
+  motor3.setSpeed(SlowiCSpeed);
+  motor4.setSpeed(SlowCSpeed);
+  //Serial.println("clock");
+}
+
+void clock() {
+  motor1.setSpeed(iCSpeed);
+  motor2.setSpeed(CSpeed);
+  motor3.setSpeed(CSpeed);
+  motor4.setSpeed(iCSpeed);
+ // Serial.println("anticlock");
+}
+
+void Sclock() {
+  motor1.setSpeed(SlowiCSpeed);
+  motor2.setSpeed(SlowCSpeed);
+  motor3.setSpeed(SlowCSpeed);
+  motor4.setSpeed(SlowiCSpeed);
+ // Serial.println("anticlock");
+}
+
+void UpRight(){
+  motor1.setSpeed(Speed);
+  motor2.setSpeed(Speed);
+  motor3.setSpeed(Speed);
+  motor4.setSpeed(Speed);
+  //Serial.println("Upright");
+}
+
+void UpLeft(){
+  motor1.setSpeed(Speed);
+  motor2.setSpeed(Speed);
+  motor3.setSpeed(iSpeed);
+  motor4.setSpeed(iSpeed);
+  //Serial.println("Upright");
+}
+
+void DownLeft(){
+  motor1.setSpeed(iSpeed);
+  motor2.setSpeed(iSpeed);
+  motor3.setSpeed(iSpeed);
+  motor4.setSpeed(iSpeed);
+  //Serial.println("Upright");
+}
+
+void DownRight(){
+  motor1.setSpeed(iSpeed);
+  motor2.setSpeed(iSpeed);
+  motor3.setSpeed(Speed);
+  motor4.setSpeed(Speed);
+  //Serial.println("Upright");
+}
+
+void stop(){
+  motorBall.setSpeed(0);
+  
+  motor1.setSpeed(0);
+  motor2.setSpeed(0);
+  motor3.setSpeed(0);
+  motor4.setSpeed(0);
+  //Serial.println("nahi chal ra");
+}
