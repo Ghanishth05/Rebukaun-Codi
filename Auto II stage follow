@@ -1,0 +1,300 @@
+#include <CytronMotorDriver.h>
+
+// Motor driver and motor definitions
+CytronMD motor1(PWM_DIR, 12, 23); // Front right motor, responsible for forward and backward motion
+CytronMD motor2(PWM_DIR, 3, 25); // Back left motor, responsible for forward and backward motion
+CytronMD motor3(PWM_DIR, 4, 27); // Front left motor, responsible for leteft and right motion
+CytronMD motor4(PWM_DIR, 5, 29); // Back right motor, responsible for left and right motion
+
+// Line sensor definitions
+const byte AN1 = A2; // Analog pin of front center LSA08 sensor
+const byte JP1 = 48; // Junction pin of front center LSA08 sensor
+const byte AN2 = A1; // Analog pin of right center LSA08 sensor
+const byte JP2 = 30; // Junction pin of right center LSA08 sensor
+
+
+unsigned long actionStartTime = 0;
+unsigned long actionDuration = 100;
+
+int Switch = 21;
+// Variables to keep track of junction counts
+int frontJunctionCount = 0;
+int rightJunctionCount = 0;
+
+void setup() {
+  // Initialize serial communication
+  Serial.begin(9600);
+  pinMode(Switch, INPUT_PULLUP);
+  // Set up line sensors
+  pinMode(JP1, INPUT);
+  pinMode(JP2, INPUT);
+}
+
+void loop() {
+
+ 
+  // Read line sensor values
+  int frontSensorValue = analogRead(AN1);
+  int rightSensorValue = analogRead(AN2);
+
+
+   unsigned long currentTime = millis();
+  Serial.print("JP1:  ");
+  Serial.print(frontJunctionCount);
+  Serial.print("  JP2:  ");
+  Serial.print(rightJunctionCount);
+  Serial.print("  LFR1:  ");
+  Serial.print(frontSensorValue);
+  Serial.print("  LFR2:  ");
+  Serial.println(rightSensorValue);
+
+
+  int EM = digitalRead(Switch);
+if(EM == LOW){
+
+  
+
+  if (frontJunctionCount < 2){
+    followLineFront();
+ 
+  }
+  else if (frontJunctionCount == 2){
+    follow1LineFront();
+  }
+  
+  else if (rightJunctionCount < 1){
+    /*motor1.setSpeed(-20);
+    motor2.setSpeed(-20);
+    motor3.setSpeed(40);
+    motor4.setSpeed(30);
+    delay(180);*/
+     followLineRight();
+  }
+  else if (frontJunctionCount >=8){
+    motor1.setSpeed(0);
+    motor2.setSpeed(0);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+    
+    delay(50);
+
+    motor1.setSpeed(20);
+    motor2.setSpeed(-20);
+    motor3.setSpeed(-20);
+    motor4.setSpeed(20);
+    delay(2000);
+    
+    motor1.setSpeed(0);
+    motor2.setSpeed(0);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+    delay(10000);
+
+  }
+  else if (rightJunctionCount > 0 && frontJunctionCount < 7) {
+
+    if(frontSensorValue > 900 && rightSensorValue > 900){
+
+    motor1.setSpeed(0);
+    motor2.setSpeed(0);
+    motor3.setSpeed(-20);
+    motor4.setSpeed(-20);
+    delay(80);
+    }
+    follow2LineFront();
+    
+  }
+  if (digitalRead(JP1) == HIGH) {
+    // Increment front junction count
+    frontJunctionCount++;
+
+
+    delay(150);
+  }
+
+  // Check if right sensor detects a junction
+  if (digitalRead(JP2) == HIGH) {
+    // Increment right junction count
+    rightJunctionCount++;
+
+    // Move right a bit to clear the junction
+  
+    delay(160);
+  }
+  
+}
+
+else if (EM == HIGH){
+  motor1.setSpeed(0);
+    motor2.setSpeed(0);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+}
+  // Print junction counts to serial
+  
+}
+
+void followLineFront() {
+  // Read line sensor values
+  int frontSensorValue = analogRead(AN1);
+  int rightSensorValue = analogRead(AN2);
+
+  // Adjust motor speeds to follow the line
+  if (frontSensorValue < 650 && frontSensorValue > 380) {
+    // If front sensor is on the line, move forward
+    motor1.setSpeed(60);
+    motor2.setSpeed(60);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+  } else if (frontSensorValue <= 380) {
+    motor1.setSpeed(50);
+    motor2.setSpeed(50);
+    motor3.setSpeed(-30);
+    motor4.setSpeed(10);
+  } else if (frontSensorValue >= 650){
+    motor1.setSpeed(50);
+    motor2.setSpeed(50);
+    motor3.setSpeed(30);
+    motor4.setSpeed(-10);
+  }
+  else if (frontSensorValue > 1000 && rightSensorValue > 1000) {
+    motor1.setSpeed(50);
+    motor2.setSpeed(60);
+    motor3.setSpeed(-30);
+    motor4.setSpeed(10);
+  }
+//while(frontSensorValue > 1000 && rightSensorValue > 1000){}
+
+   
+}
+
+
+void follow2LineFront() {
+  // Read line sensor values
+  int frontSensorValue = analogRead(AN1);
+  int rightSensorValue = analogRead(AN2);
+
+  // Adjust motor speeds to follow the line
+  if (frontSensorValue < 650 && frontSensorValue > 380) {
+    // If front sensor is on the line, move forward
+    motor1.setSpeed(70);
+    motor2.setSpeed(70);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+  } else if (frontSensorValue <= 380) {
+    motor1.setSpeed(60);
+    motor2.setSpeed(60);
+    motor3.setSpeed(-40);
+    motor4.setSpeed(10);
+  } else if (frontSensorValue >= 650){
+    motor1.setSpeed(60);
+    motor2.setSpeed(60);
+    motor3.setSpeed(40);
+    motor4.setSpeed(-10);
+  }
+  else if (frontSensorValue > 1000 && rightSensorValue > 1000) {
+    motor1.setSpeed(50);
+    motor2.setSpeed(60);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+  }
+//while(frontSensorValue > 1000 && rightSensorValue > 1000){}
+
+   
+}
+
+
+
+void follow1LineFront() {
+  // Read line sensor values
+  int frontSensorValue = analogRead(AN1);
+  int rightSensorValue = analogRead(AN2);
+
+  // Adjust motor speeds to follow the line
+  if (frontSensorValue < 650 && frontSensorValue > 380) {
+    // If front sensor is on the line, move forward
+    motor1.setSpeed(40);
+    motor2.setSpeed(40);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+  } else if (frontSensorValue <= 380) {
+    motor1.setSpeed(40);
+    motor2.setSpeed(40);
+    motor3.setSpeed(-30);
+    motor4.setSpeed(10);
+  } else if (frontSensorValue >= 650){
+    motor1.setSpeed(40);
+    motor2.setSpeed(40);
+    motor3.setSpeed(30);
+    motor4.setSpeed(-10);
+  }
+  else if (frontSensorValue > 1000 && rightSensorValue > 1000) {
+    motor1.setSpeed(40);
+    motor2.setSpeed(50);
+    motor3.setSpeed(-30);
+    motor4.setSpeed(10);
+  }
+//while(frontSensorValue > 1000 && rightSensorValue > 1000){}
+
+   
+}
+
+void followLineRight() {
+  // Read line sensor values
+  int frontSensorValue = analogRead(AN1);
+  int rightSensorValue = analogRead(AN2);
+
+  // Adjust motor speeds to follow the line
+  if (rightSensorValue < 500 && rightSensorValue > 400) {
+    // If right sensor is on the line, move forward
+    motor1.setSpeed(0);
+    motor2.setSpeed(0);
+    motor3.setSpeed(45);
+    motor4.setSpeed(45);
+  } else if (rightSensorValue >= 500) {
+    // If front sensor is on the line, turn left
+    motor1.setSpeed(22);
+    motor2.setSpeed(0);
+    motor3.setSpeed(45);
+    motor4.setSpeed(45);
+  } else if (rightSensorValue <= 400){
+    motor1.setSpeed(-32);
+    motor2.setSpeed(10);
+    motor3.setSpeed(45);
+    motor4.setSpeed(45);
+  }
+  else if (frontSensorValue > 900 && rightSensorValue > 900) {
+    motor1.setSpeed(-50);
+    motor2.setSpeed(-50);
+    motor3.setSpeed(30);
+    motor4.setSpeed(30);
+  }
+}
+
+
+
+void followBackLine() {
+  // Read line sensor values
+  int frontSensorValue = analogRead(AN1);
+  int rightSensorValue = analogRead(AN2);
+
+  // Adjust motor speeds to follow the line
+  if (frontSensorValue < 400 && frontSensorValue > 350) {
+    // If front sensor is on the line, move forward
+    motor1.setSpeed(-50);
+    motor2.setSpeed(-50);
+    motor3.setSpeed(0);
+    motor4.setSpeed(0);
+  } else if (frontSensorValue <= 350) {
+    motor1.setSpeed(-30);
+    motor2.setSpeed(-30);
+    motor3.setSpeed(-30);
+    motor4.setSpeed(-30);
+  } else if (frontSensorValue >= 400){
+    motor1.setSpeed(-30);
+    motor2.setSpeed(-30);
+    motor3.setSpeed(10);
+    motor4.setSpeed(10);
+  }
+   
+}
