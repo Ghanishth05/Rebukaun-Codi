@@ -1,0 +1,562 @@
+/*
+         OW              PT                         
+         VN              KQ                      
+                                                                 
+       F                  U                                     m
+  I    f    E             u                              ye
+
+L l         r R     A a       c C                    gz       ki
+
+  Z    l    J             d                              pq
+       L                  D
+*/
+
+
+
+#include <Adafruit_NeoPixel.h>
+#define PIN_NEO_PIXEL 10
+#define NUM_PIXELS 3
+#define SECOND_LED_INDEX 1
+#define DEFAULT_BRIGHTNESS 40
+Adafruit_NeoPixel NeoPixel(NUM_PIXELS, PIN_NEO_PIXEL, NEO_GRB + NEO_KHZ800);
+
+
+
+int limitO = 12, limitB = 11, limitV = 8, limitK = 2; // limits
+int limitO1, limitB1, limitV1, limitK1; 
+
+int y = 7, g = 5, k = 4, p = 6; // bttons
+int y1, g1, k1, p1; 
+
+int w = 9, m = 3; // toggles
+int w1, m1;
+
+int Jx = A3;
+int Jy = A0;
+int JRx = A2;
+int JRy = A1; //JoySticks
+int xPosition = 0;
+int yPosition = 0;
+int RxPosition = 0;
+int AyPosition = 0;
+
+int mapX = 0;
+int mapY = 0;
+int mapRX = 0;
+int mapRY = 0;
+
+char x;
+char check;
+
+int fluctuating_region=80;
+int Speed_region = 200;
+
+
+void setup() {
+  Serial.begin(115200);
+
+  NeoPixel.begin();
+  
+  NeoPixel.clear();
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(0, 255, 0));
+  NeoPixel.setBrightness(40);
+  NeoPixel.show();
+  delay(140);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(1, NeoPixel.Color(0, 255, 0));
+  NeoPixel.setBrightness(40);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(1, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(0, NeoPixel.Color(0, 255, 0));
+  NeoPixel.setBrightness(40);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(0, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(0, NeoPixel.Color(0, 170, 255));
+  NeoPixel.setBrightness(40);
+  NeoPixel.setPixelColor(1, NeoPixel.Color(0, 170, 255));
+  NeoPixel.setBrightness(40);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(0, 170, 255));
+  NeoPixel.setBrightness(40);
+  NeoPixel.show();
+  delay(80);
+  delay(80);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(0, 255, 0));
+  NeoPixel.setBrightness(40);
+  NeoPixel.show();
+  delay(140);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(1, NeoPixel.Color(0, 255, 0));
+  NeoPixel.setBrightness(40);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(1, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(0, NeoPixel.Color(0, 255, 0));
+  NeoPixel.setBrightness(40);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(0, NeoPixel.Color(255, 0, 0));
+  NeoPixel.setBrightness(60);
+  NeoPixel.show();
+  delay(80);
+  NeoPixel.setPixelColor(0, NeoPixel.Color(0, 170, 255));
+  NeoPixel.setBrightness(40);
+  NeoPixel.setPixelColor(1, NeoPixel.Color(0, 170, 255));
+  NeoPixel.setBrightness(40);
+  NeoPixel.setPixelColor(2, NeoPixel.Color(0, 170, 255));
+  NeoPixel.setBrightness(40);
+  NeoPixel.show();
+  delay(1400);
+  NeoPixel.clear();
+  NeoPixel.show();
+  delay(10);
+
+  pinMode(limitO, INPUT_PULLUP);
+  pinMode(limitB, INPUT_PULLUP);
+  pinMode(limitV, INPUT_PULLUP);
+  pinMode(limitK, INPUT_PULLUP); //LIMITS
+
+  pinMode(y, INPUT_PULLUP);
+  pinMode(g, INPUT_PULLUP);
+  pinMode(k, INPUT_PULLUP);
+  pinMode(p, INPUT_PULLUP); //TOP BUTTONS
+
+  pinMode(w, INPUT_PULLUP);
+  pinMode(m, INPUT_PULLUP); //TOGGLES
+
+  pinMode(Jx, INPUT);
+  pinMode(Jy, INPUT);
+  pinMode(JRx, INPUT);
+  pinMode(JRy, INPUT);
+
+
+}
+
+void loop() {
+  xPosition = analogRead(Jx);
+  yPosition = analogRead(Jy);
+  RxPosition = analogRead(JRx);
+  AyPosition = analogRead(JRy);
+
+  mapX = map(xPosition, 0, 1023, -255, 255);
+  mapY = map(yPosition, 0, 1023, -255, 255);
+  mapRX = map(AyPosition, 0, 1023, -255, 255);
+  mapRY = map(RxPosition, 0, 1023, -255, 255);
+
+  limitO1=digitalRead(limitO);
+  limitB1=digitalRead(limitB);
+  limitV1=digitalRead(limitV);
+  limitK1=digitalRead(limitK);
+
+
+  y1=digitalRead(y);
+  g1=digitalRead(g);
+  k1=digitalRead(k);
+  p1=digitalRead(p);
+
+
+  w1=digitalRead(w);
+  m1=digitalRead(m);
+
+
+ 
+
+
+  // Check if voltage is below 7V, then blink red for the second LED
+  
+
+
+if (m1==HIGH){
+  NeoPixel.setPixelColor(2, NeoPixel.Color(0, 0, 255));
+  NeoPixel.setBrightness(20);
+  NeoPixel.show();
+  Arena1();
+  delay(10);
+  }
+
+else if (m1==LOW){
+  NeoPixel.setPixelColor(2, NeoPixel.Color(255, 100, 60));
+  NeoPixel.setBrightness(20);
+  NeoPixel.show();
+  Arena2();
+  delay(10);
+  }
+}
+
+void Arena1(){
+  if (mapRX< -fluctuating_region && abs(mapRY) < fluctuating_region && mapRX < -Speed_region)
+        {
+          x='C';//CW-rotation
+        }
+   else if (mapRX< -fluctuating_region && abs(mapRY) < fluctuating_region && mapRX > -Speed_region)
+        {
+          x='c';//CW-rotation
+        }
+   else if (mapRX > fluctuating_region && abs(mapRY) < fluctuating_region && mapRX < Speed_region)
+        {
+          x='a';//Anti-CW-rotation
+        }
+
+    else if (mapRX > fluctuating_region && abs(mapRY) < fluctuating_region && mapRX > Speed_region)
+        {
+          x='A';//Anti-CW-rotation
+        }
+
+   //to change the angle of shooter
+   if (mapRY < -fluctuating_region && abs(mapRX) < fluctuating_region && mapRY > -Speed_region)
+        {
+          x='u';//Up
+        }
+   else if (mapRY < -fluctuating_region && abs(mapRX) < fluctuating_region && mapRY < -Speed_region)
+        {
+          x='U';//Up
+        }
+   else if (mapRY > fluctuating_region && abs(mapRX) < fluctuating_region && mapRY < Speed_region)
+        {
+          x='d';//Down 
+        }
+    else if (mapRY > fluctuating_region && abs(mapRX) < fluctuating_region && mapRY > Speed_region)
+        {
+          x='D';//Down 
+        }
+
+   //Forward,Backward,Right & Left motion 
+   if (mapX > fluctuating_region && abs(mapY)<fluctuating_region && mapX > Speed_region)
+        {
+            x='B';//Backward
+        }
+       else if (mapX > fluctuating_region && abs(mapY)<fluctuating_region && mapX < Speed_region)
+        {
+            x='b';//slow
+        }
+   else if (mapX < -fluctuating_region && abs(mapY)<fluctuating_region && mapX > -Speed_region)
+        {   
+            x='f';//Forward
+        }
+    else if (mapX < -fluctuating_region && abs(mapY)<fluctuating_region && mapX < -Speed_region)
+        {   
+            x='F';//Forward
+        }
+   else if (mapY > fluctuating_region && abs(mapX)<fluctuating_region && mapY < Speed_region)
+        {
+            x='l';//Left
+        }
+    else if (mapY > fluctuating_region && abs(mapX)<fluctuating_region && mapY > Speed_region)
+        {
+            x='L';//Left
+        }
+    else if (mapY < -fluctuating_region && abs(mapX)<fluctuating_region && mapY > -Speed_region)
+        {
+            x='r';//Right
+        }
+    else if (mapY < -fluctuating_region && abs(mapX)<fluctuating_region && mapY < -Speed_region)
+        {
+            x='R';//Right
+        }
+
+        else if (mapX < -Speed_region && mapY > Speed_region)
+        {   
+            x='I';//Forward
+        }
+            
+            else if (mapX > Speed_region && mapY < -Speed_region)
+        {   
+            x='J';//Forward
+        }
+            
+            else if (mapY < -Speed_region && mapX < -Speed_region)
+        {   
+            x='E';//Forward
+        }
+             
+            else if (mapY > Speed_region && mapX > Speed_region)
+        {   
+            x='Z';//Forward
+        }
+            
+        
+    
+    
+    else if ((abs(mapX)<fluctuating_region && abs(mapY)<fluctuating_region && abs(mapRX) < fluctuating_region && abs(mapRY)<fluctuating_region) /* && (grip_state==HIGH && load_state==HIGH )*/)
+            {
+               x='H';//Halt
+            }
+
+     Serial.write(x);
+     Serial.println(" ");
+
+     if (limitO1 == LOW && x!= 'O'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(255, 0, 0));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('O');
+      Serial.println("");
+      delay(0);
+     }
+     else if (limitB1 == LOW && x!= 'B'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(255, 0, 0));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('P');
+      Serial.println("");
+      delay(0);
+     }
+     else if (limitK1 == LOW && x!= 'K'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(100, 255, 0));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('K');
+      Serial.println("");
+      delay(0);
+     }
+     else if (limitV1 == LOW && x!= 'V'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(100, 255, 0));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('V');
+      Serial.println("");
+      delay(0);
+     }
+
+     if (y1==LOW && x!='y'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(0, 200, 200));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('y');
+      Serial.println("");
+      delay(50);
+     }
+     else if (g1==LOW && x!='g'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(0, 200, 200));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('g');
+      Serial.println("");
+      delay(100);
+     }
+     if (k1==LOW && x!='k'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(0, 200, 200));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('k');
+      Serial.println("");
+      delay(100);
+     }
+     else if (p1==LOW && x!='p'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(0, 200, 200));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('p');
+      Serial.println("");
+      delay(100);
+     }
+
+     
+}
+
+void Arena2(){
+  if (mapRX< -fluctuating_region && abs(mapRY) < fluctuating_region && mapRX < -Speed_region)
+        {
+          x='C';//CW-rotation
+        }
+   else if (mapRX< -fluctuating_region && abs(mapRY) < fluctuating_region && mapRX > -Speed_region)
+        {
+          x='c';//CW-rotation
+        }
+   else if (mapRX > fluctuating_region && abs(mapRY) < fluctuating_region && mapRX < Speed_region)
+        {
+          x='a';//Anti-CW-rotation
+        }
+
+    else if (mapRX > fluctuating_region && abs(mapRY) < fluctuating_region && mapRX > Speed_region)
+        {
+          x='A';//Anti-CW-rotation
+        }
+
+   //to change the angle of shooter
+   if (mapRY < -fluctuating_region && abs(mapRX) < fluctuating_region && mapRY > -Speed_region)
+        {
+          x='u';//Up
+        }
+   else if (mapRY < -fluctuating_region && abs(mapRX) < fluctuating_region && mapRY < -Speed_region)
+        {
+          x='U';//Up
+        }
+   else if (mapRY > fluctuating_region && abs(mapRX) < fluctuating_region && mapRY < Speed_region)
+        {
+          x='d';//Down 
+        }
+    else if (mapRY > fluctuating_region && abs(mapRX) < fluctuating_region && mapRY > Speed_region)
+        {
+          x='D';//Down 
+        }
+
+   //Forward,Backward,Right & Left motion 
+   if (mapX > fluctuating_region && abs(mapY)<fluctuating_region && mapX > Speed_region)
+        {
+            x='B';//Backward
+        }
+       else if (mapX > fluctuating_region && abs(mapY)<fluctuating_region && mapX < Speed_region)
+        {
+            x='b';//slow
+        }
+   else if (mapX < -fluctuating_region && abs(mapY)<fluctuating_region && mapX > -Speed_region)
+        {   
+            x='f';//Forward
+        }
+    else if (mapX < -fluctuating_region && abs(mapY)<fluctuating_region && mapX < -Speed_region)
+        {   
+            x='F';//Forward
+        }
+   else if (mapY > fluctuating_region && abs(mapX)<fluctuating_region && mapY < Speed_region)
+        {
+            x='l';//Left
+        }
+    else if (mapY > fluctuating_region && abs(mapX)<fluctuating_region && mapY > Speed_region)
+        {
+            x='L';//Left
+        }
+    else if (mapY < -fluctuating_region && abs(mapX)<fluctuating_region && mapY > -Speed_region)
+        {
+            x='r';//Right
+        }
+    else if (mapY < -fluctuating_region && abs(mapX)<fluctuating_region && mapY < -Speed_region)
+        {
+            x='R';//Right
+        }
+
+        else if (mapX < -Speed_region && mapY > Speed_region)
+        {   
+            x='I';//Forward
+        }
+       
+            else if (mapX > Speed_region && mapY < -Speed_region)
+        {   
+            x='J';//Forward
+        }
+    
+            else if (mapY < -Speed_region && mapX < -Speed_region)
+        {   
+            x='E';//Forward
+        }
+     
+            else if (mapY > Speed_region && mapX > Speed_region)
+        {   
+            x='Z';//Forward
+        }
+      
+        
+    
+    
+    else if ((abs(mapX)<fluctuating_region && abs(mapY)<fluctuating_region && abs(mapRX) < fluctuating_region && abs(mapRY)<fluctuating_region) /* && (grip_state==HIGH && load_state==HIGH )*/)
+            {
+               x='H';//Halt
+            }
+
+     Serial.write(x);
+     Serial.println(" ");
+
+     if (limitO1 == LOW && x!= 'O'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(255, 0, 0));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('W');
+      Serial.println("");
+      delay(0);
+     }
+     else if (limitB1 == LOW && x!= 'B'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(255, 0, 0));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('T');
+      Serial.println("");
+      delay(0);
+     }
+     else if (limitK1 == LOW && x!= 'K'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(100, 255, 0));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('Q');
+      Serial.println("");
+      delay(0);
+     }
+     else if (limitV1 == LOW && x!= 'V'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(100, 255, 0));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('N');
+      Serial.println("");
+      delay(0);
+     }
+
+     if (y1==LOW && x!='y'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(0, 200, 255));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('e');
+      Serial.println("");
+      delay(100);
+     }
+     else if (g1==LOW && x!='g'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(0, 200, 255));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('z');
+      Serial.println("");
+      delay(100);
+     }
+     if (k1==LOW && x!='k'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(0, 200, 255));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('i');
+      Serial.println("");
+      delay(100);
+     }
+     else if (p1==LOW && x!='p'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(0, 200, 255));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('q');
+      Serial.println("");
+      delay(100);
+     }
+
+     if (w1==LOW && x!='w'){
+    NeoPixel.setPixelColor(0, NeoPixel.Color(80, 50, 120));
+    NeoPixel.setBrightness(60);
+    NeoPixel.show();
+      Serial.write('s');
+      Serial.println("");
+      delay(100);
+     }
+}
+
+
+
